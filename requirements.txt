@@ -8,6 +8,7 @@ colorama==0.4.6
 llama-cpp-python==0.2.27
 langchain==0.1.16
 sentence-transformers==2.2.2
+huggingface_hub==0.14.1
 
 # Document processing
 PyPDF2==3.0.1
