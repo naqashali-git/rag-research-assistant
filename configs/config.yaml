@@ -1,0 +1,92 @@
+# RAG Research Assistant Configuration
+# Offline-first, security-constrained defaults
+
+# Local Language Model Inference (llama.cpp)
+llm:
+  provider: llama_cpp
+  model_path: ./models/llama-2-7b-chat.ggmlv3.q4_0.bin
+  context_length: 2048
+  temperature: 0.7
+  max_tokens: 512
+  # System prompt enforces context-only answers
+  system_prompt: |
+    You are a helpful research assistant. 
+    Answer ONLY using the provided context. 
+    If the context does not contain sufficient information, clearly state: "I don't know based on the provided documents."
+    Always cite sources using [n] notation.
+
+# Embeddings Configuration
+embedding:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+  batch_size: 32
+  cache_dir: "./models/embeddings"
+
+# Vector Database (Chroma)
+vector_store:
+  type: chroma
+  path: ./vectorstore/db
+  persist: true
+  collection_name: documents
+
+# Document Ingestion
+document_ingestion:
+  # Default metadata applied to all chunks
+  default_confidentiality: "internal"  # internal, confidential, public
+  chunk_size: 512
+  chunk_overlap: 100
+  # Supported formats
+  supported_formats:
+    - pdf
+    - docx
+    - markdown
+    - txt
+    - json  # Zotero exports
+
+# Security & Offline-First Settings
+security:
+  # OFFLINE mode (default) = no network sockets allowed
+  # EGRESS mode = controlled network access via allowlist
+  mode: offline  # offline | egress
+
+  # Egress mode configuration (only used when mode: egress)
+  egress:
+    enabled: false
+    allowlist_domains:
+      - "arxiv.org"
+      - "ieeexplore.ieee.org"
+      - "scholar.google.com"
+    request_timeout: 10
+    user_agent: "RAG-Research-Assistant/1.0"
+    # Sanitize queries: only keywords, no raw snippets
+    sanitize_queries: true
+    max_query_length: 100
+
+# Audit Logging (immutable record of all operations)
+audit_log:
+  enabled: true
+  file: ./audit.log
+  level: INFO
+  # Log all outbound URLs, timestamps, byte counts
+  log_network_egress: true
+  # Never log response bodies (prevent exfiltration)
+  include_response_body: false
+
+# Output Configuration
+output:
+  citation_format: ieee  # ieee | apa
+  output_dir: ./outputs/
+  latex_template: ieeeetran
+
+# Paths for document ingestion
+document_dirs:
+  - ./data/sample/
+
+# Metadata schema enforced on all chunks
+chunk_metadata_schema:
+  required_fields:
+    - source_path
+    - doc_type  # pdf, docx, markdown, zotero
+    - page_or_section  # page number or section heading
+    - created_at  # ISO 8601 timestamp
+    - hash  # SHA256 hash of chunk content
+    - confidentiality  # internal, confidential, public

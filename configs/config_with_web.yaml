@@ -1,0 +1,50 @@
+# Example config with web retrieval enabled
+
+llm:
+  provider: llama_cpp
+  model_path: ./models/llama-2-7b-chat.ggmlv3.q4_0.bin
+  context_length: 2048
+  temperature: 0.7
+  max_tokens: 512
+
+embedding:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+
+vector_store:
+  type: chroma
+  path: ./vectorstore/db
+  persist: true
+
+document_ingestion:
+  default_confidentiality: "internal"
+  chunk_size: 512
+  chunk_overlap: 100
+
+security:
+  # Set to 'egress' to enable web retrieval
+  mode: egress  # or 'offline'
+  
+  egress:
+    enabled: true
+    allowlist_domains:
+      - "arxiv.org"
+      - "ieeexplore.ieee.org"
+      - "scholar.google.com"
+    request_timeout: 10
+    sanitize_queries: true
+    max_query_length: 12  # Token limit for web queries
+
+audit_log:
+  enabled: true
+  file: ./audit.log
+  level: INFO
+  log_network_egress: true
+  include_response_body: false
+
+output:
+  citation_format: ieee
+  output_dir: ./outputs/
+
+document_dirs:
+  - ./data/sample/
+  - ./cache/web  # Include cached web pages in retrieval

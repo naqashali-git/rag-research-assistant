@@ -1,0 +1,41 @@
+# Core dependencies
+python-dotenv==1.0.0
+PyYAML==6.0
+click==8.1.7
+colorama==0.4.6
+
+# LLM & Embeddings
+llama-cpp-python==0.2.27
+langchain==0.1.16
+sentence-transformers==2.2.2
+
+# Document processing
+PyPDF2==3.0.1
+python-docx==0.8.11
+markdown==3.5.1
+
+# Vector store
+chromadb==0.4.22
+
+# Network & security
+requests==2.31.0
+
+# Hashing
+cryptography==41.0.7
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+
+# Linting & formatting
+black==23.12.1
+flake8==6.1.0
+mypy==1.7.1
+isort==5.13.2
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+
+# Word document generation
+python-docx==0.8.11

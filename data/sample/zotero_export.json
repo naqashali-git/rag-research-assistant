@@ -1,0 +1,54 @@
+[
+  {
+    "key": "item-rag-2020",
+    "citationKey": "Lewis2020RAG",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "creators": [
+      {"family": "Lewis", "given": "Patrick"},
+      {"family": "Schwenk", "given": "Holger"},
+      {"family": "Bengio", "given": "Yoshua"}
+    ],
+    "issued": {"date-parts": [[2020]]},
+    "type": "conference",
+    "bookTitle": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    "pages": "1234-1246",
+    "DOI": "10.18653/v1/2020.emnlp-main.90",
+    "URL": "https://aclanthology.org/2020.emnlp-main.90/",
+    "abstract": "Large pre-trained language models have shown promise in a wide range of NLP tasks, but they still struggle with tasks that require access to factual information that is not contained in their parameters. In this work, we investigate retrieval-augmented generation (RAG), which combines a pre-trained retriever with a sequence-to-sequence generative model. We compare retrieval-augmented generation to several baselines and find that it outperforms parametric models on open-domain QA, and achieves comparable or better performance on machine translation."
+  },
+  {
+    "key": "item-llm-2022",
+    "citationKey": "Brown2022GPT3",
+    "title": "Language Models are Few-Shot Learners",
+    "creators": [
+      {"family": "Brown", "given": "Tom"},
+      {"family": "Mann", "given": "Benjamin"},
+      {"family": "Ryder", "given": "Nick"},
+      {"family": "Subbiah", "given": "Melanie"}
+    ],
+    "issued": {"date-parts": [[2022]]},
+    "type": "journal-article",
+    "publication": "Nature Machine Intelligence",
+    "volume": "4",
+    "issue": "1",
+    "pages": "22-35",
+    "DOI": "10.1038/s42256-021-00287-1",
+    "abstract": "We have developed a class of neural network models called GPT-3, which shows that scaling up language models greatly improves task-agnostic, few-shot performance. GPT-3 is a 175 billion parameter language model which achieves strong performance on many NLP datasets."
+  },
+  {
+    "key": "item-semantic-2023",
+    "citationKey": "Devlin2023SemanticSearch",
+    "title": "Semantic Search with Sentence Transformers",
+    "creators": [
+      {"family": "Devlin", "given": "Jacob"},
+      {"family": "Reimers", "given": "Nils"}
+    ],
+    "issued": {"date-parts": [[2023]]},
+    "type": "journal-article",
+    "publication": "Computational Linguistics Review",
+    "volume": "49",
+    "pages": "145-167",
+    "DOI": "10.1234/clr.2023.49",
+    "abstract": "This work presents an efficient method for semantic similarity search using pre-trained transformer models. We demonstrate the effectiveness of sentence transformers on multiple semantic textual similarity benchmarks."
+  }
+]
