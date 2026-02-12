@@ -7,6 +7,99 @@ on:
     branches: [ main ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install -r requirements.txt
+    
+    - name: Lint with flake8
+      run: |
+        flake8 rag_assistant tests --count --select=E9,F63,F7,F82 --show-source
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install -r requirements.txt
+    
+    - name: Run all tests
+      run: |
+        pytest tests/ -v --cov=rag_assistant -k "not test_end2end"
+
+    - name: Run Zotero tests
+      run: |
+        pytest tests/test_zotero.py -v
+
+  security-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install -r requirements.txt
+    
+    - name: Security self-test
+      run: |
+        python -m rag_assistant.cli security self-test --config configs/config.yaml
+
+  paper-draft-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install -r requirements.txt
+    
+    - name: Test outline generation
+      run: |
+        python -c "
+from rag_assistant.paper import OutlineGenerator
+from tests.test_paper_drafting import MockLLM
+
+llm = MockLLM()
+gen = OutlineGenerator(llm)
+outline = gen.generate_outline('Test Topic', deterministic=True)
+print(f'Generated outline with {len(outline.sections)} sections')
+assert len(outline.sections) > 0
+"
+
   web-security-tests:
     runs-on: ubuntu-latest
     steps:
@@ -20,6 +113,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install -e .
         pip install -r requirements.txt
     
     - name: Test web retrieval security
