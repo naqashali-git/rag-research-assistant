@@ -83,7 +83,7 @@ class FormattedCitationFormatter:
         lines = []
         
         for i, item in enumerate(items, start=start_index):
-            authors = BibTeXFormatter._format_authors_short(item.authors)
+            authors = BibTeXHelpers._format_authors_short(item.authors)
             
             # Build citation string
             parts = [f"[{i}]", authors + ","]
@@ -131,7 +131,7 @@ class FormattedCitationFormatter:
             
             # Authors
             if item.authors:
-                authors = BibTeXFormatter._format_authors_apa(item.authors)
+                authors = BibTeXHelpers._format_authors_apa(item.authors)
                 parts.append(authors)
             else:
                 parts.append("Unknown Author")
@@ -183,7 +183,7 @@ class FormattedCitationFormatter:
         lines = ['<ol>']
         
         for i, item in enumerate(items, start=start_index):
-            authors = BibTeXFormatter._format_authors_short(item.authors)
+            authors = BibTeXHelpers._format_authors_short(item.authors)
             title = item.title or "Unknown"
             year = item.year or 'n.d.'
             
@@ -208,7 +208,7 @@ class FormattedCitationFormatter:
         lines = []
         
         for i, item in enumerate(items, 1):
-            authors = BibTeXFormatter._format_authors_short(item.authors)
+            authors = BibTeXHelpers._format_authors_short(item.authors)
             title = item.title or "Unknown"
             year = item.year or 'n.d.'
             
@@ -218,7 +218,7 @@ class FormattedCitationFormatter:
         return '\n'.join(lines)
 
 
-class BibTeXFormatter:
+class BibTeXHelpers:
     """Utility methods for BibTeX formatting."""
     
     @staticmethod

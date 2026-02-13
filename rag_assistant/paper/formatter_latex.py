@@ -2,7 +2,7 @@
 Format paper drafts as LaTeX (IEEEtran) with references.bib.
 """
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from pathlib import Path
 from .engine import DraftedSection
 from .outline import PaperOutline
@@ -115,7 +115,6 @@ This research was conducted using the RAG Research Assistant, a local-first cita
             '}': r'\}',
             '~': r'\textasciitilde{}',
             '^': r'\textasciicircum{}',
-            '\\': r'\textbackslash{}',
         }
         result = text
         for char, escape in replacements.items():

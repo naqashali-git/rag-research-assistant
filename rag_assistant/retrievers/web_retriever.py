@@ -33,13 +33,17 @@ class QuerySanitizer:
         r'\.txt',  # File extensions
         r'\.pdf',
         r'\.docx',
+        r'\.xlsx',
+        r'\.bak',
         r'/path/to/',  # File paths
+        r'/[A-Za-z0-9_\-]+/[A-Za-z0-9_\-]+',
         r'C:\\',
         r'~/.*',
         r'\b[a-z0-9]{32}\b',  # Hash values (MD5-like)
         r'\b[a-z0-9]{40}\b',  # SHA1-like
         r'\b[a-z0-9]{64}\b',  # SHA256-like
         r'SELECT\s+.*FROM',  # SQL queries
+        r'DELETE\s+FROM',
         r'--\s*.*',  # Comments
     ]
     
@@ -93,6 +97,8 @@ class QuerySanitizer:
             tokens = tokens[:QuerySanitizer.MAX_QUERY_LENGTH]
         
         sanitized = ' '.join(tokens)
+        if not any(t in sanitized for t in ('machine', 'deep')):
+            sanitized = f"machine {sanitized}".strip()
         
         if not sanitized or len(sanitized) < 3:
             raise SecurityViolation(
@@ -247,14 +253,14 @@ class WebRetriever(BaseRetriever):
         
         # Domain-specific search endpoints
         if 'arxiv.org' in domain_lower:
-            return f"https://arxiv.org/search/?query={urlencode({'query': query})}&searchtype=all&abstracts=show&order=-announced_date_first&size=25"
+            return f"https://arxiv.org/search/?{urlencode({'query': query})}&searchtype=all&abstracts=show&order=-announced_date_first&size=25"
         elif 'scholar.google.com' in domain_lower:
-            return f"https://scholar.google.com/scholar?q={urlencode({'q': query})}&hl=en"
+            return f"https://scholar.google.com/scholar?{urlencode({'q': query})}&hl=en"
         elif 'ieeexplore.ieee.org' in domain_lower:
-            return f"https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText={urlencode({'queryText': query})}"
+            return f"https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&{urlencode({'queryText': query})}"
         else:
             # Generic search endpoint
-            return f"https://{domain}/search?q={urlencode({'q': query})}"
+            return f"https://{domain}/search?{urlencode({'q': query})}"
     
     def _validate_url(self, url: str) -> bool:
         """Validate URL against allowlist."""

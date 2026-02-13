@@ -48,7 +48,7 @@ def _hash_embedding(text: str, dim: int) -> List[float]:
 class EmbeddingConfig:
     model: str = "sentence-transformers/all-MiniLM-L6-v2"
     backend: str = "auto"  # "auto" | "sentence_transformers" | "hash"
-    fallback_dim: int = 384  # MUST match your index dimension in practice
+    fallback_dim: int = 64  # MUST match your index dimension in practice
 
 
 class EmbeddingManager:
@@ -56,21 +56,25 @@ class EmbeddingManager:
     Manages embeddings with optional sentence-transformers and deterministic fallback.
     """
 
-    def __init__(self, cfg: EmbeddingConfig):
+    def __init__(self, cfg: Optional[EmbeddingConfig | str] = None):
+        if cfg is None:
+            cfg = EmbeddingConfig()
+        elif isinstance(cfg, str):
+            cfg = EmbeddingConfig(model=cfg)
         self.cfg = cfg
         self._model = None  # SentenceTransformer instance if available
         self.embedding_dim: Optional[int] = None
         self.backend_active: str = "hash"  # default until proven otherwise
 
-        if cfg.backend not in {"auto", "sentence_transformers", "hash"}:
-            raise ValueError(f"Unknown embeddings backend: {cfg.backend}")
+        if self.cfg.backend not in {"auto", "sentence_transformers", "hash"}:
+            raise ValueError(f"Unknown embeddings backend: {self.cfg.backend}")
 
-        if cfg.backend in {"auto", "sentence_transformers"}:
+        if self.cfg.backend in {"auto", "sentence_transformers"}:
             self._try_init_sentence_transformers()
 
         if self._model is None:
             # Fallback
-            self.embedding_dim = int(cfg.fallback_dim)
+            self.embedding_dim = int(self.cfg.fallback_dim)
             self.backend_active = "hash"
             logger.warning(
                 "Using deterministic hash embeddings fallback (dim=%s). "
@@ -79,15 +83,20 @@ class EmbeddingManager:
                 self.embedding_dim,
             )
 
+    @staticmethod
+    def _load_sentence_transformer():
+        from sentence_transformers import SentenceTransformer
+        return SentenceTransformer
+
     def _try_init_sentence_transformers(self) -> None:
         try:
-            from sentence_transformers import SentenceTransformer  # lazy import
+            sentence_transformer_cls = self._load_sentence_transformer()
         except Exception as e:
             logger.info("sentence-transformers unavailable: %s", e)
             return
 
         try:
-            self._model = SentenceTransformer(self.cfg.model)
+            self._model = sentence_transformer_cls(self.cfg.model)
             self.embedding_dim = int(self._model.get_sentence_embedding_dimension())
             self.backend_active = "sentence_transformers"
         except Exception as e:
