@@ -5,6 +5,7 @@ Generates sections by querying documents and citing sources.
 """
 
 from typing import Dict, List, Tuple, Optional, Any
+from dataclasses import dataclass
 import time
 from rag_assistant.rag.engine import RAGEngine
 from rag_assistant.zotero import CitationIndex
