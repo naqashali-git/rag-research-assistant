@@ -116,6 +116,15 @@ class ZoteroItem:
 
 class BetterBibTeXParser:
     """Parse Better BibTeX JSON export format."""
+
+    _ITEM_TYPE_MAP = {
+        # CSL-JSON style types commonly emitted by Better BibTeX
+        "journal-article": "article",
+        "article-journal": "article",
+        "paper-conference": "inproceedings",
+        "chapter": "incollection",
+        "webpage": "misc",
+    }
     
     @staticmethod
     def parse(json_data: Union[str, dict]) -> List[ZoteroItem]:
@@ -194,6 +203,9 @@ class BetterBibTeXParser:
                 year_match = re.search(r'\b(20\d{2}|19\d{2})\b', issued)
                 year = int(year_match.group(1)) if year_match else None
         
+        raw_item_type = (item_data.get('type', 'misc') or 'misc').lower()
+        item_type = BetterBibTeXParser._ITEM_TYPE_MAP.get(raw_item_type, raw_item_type)
+
         return ZoteroItem(
             key=item_data.get('key', ''),
             citekey=citekey,
@@ -202,7 +214,7 @@ class BetterBibTeXParser:
             title=item_data.get('title', ''),
             authors=authors,
             year=year,
-            item_type=item_data.get('type', 'misc').lower(),
+            item_type=item_type,
             journal=item_data.get('publication') or item_data.get('journal'),
             booktitle=item_data.get('bookTitle') or item_data.get('booktitle'),
             publisher=item_data.get('publisher'),
