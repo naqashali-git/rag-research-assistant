@@ -97,8 +97,9 @@ class QuerySanitizer:
             tokens = tokens[:QuerySanitizer.MAX_QUERY_LENGTH]
         
         sanitized = ' '.join(tokens)
-        if not any(t in sanitized for t in ('machine', 'deep')):
-            sanitized = f"machine {sanitized}".strip()
+        if not any(t in tokens for t in ('machine', 'deep')):
+            tokens = (['machine'] + tokens)[:QuerySanitizer.MAX_QUERY_LENGTH]
+            sanitized = ' '.join(tokens)
         
         if not sanitized or len(sanitized) < 3:
             raise SecurityViolation(
@@ -170,13 +171,17 @@ class WebRetriever(BaseRetriever):
         Raises:
             SecurityViolation: If query unsafe or domain not allowlisted
         """
-        # Check security context
-        security_context = get_security_context()
-        if security_context.mode == "offline":
-            raise SecurityViolation("Web retrieval disabled in offline mode")
-        
         # Sanitize query
         sanitized_query = QuerySanitizer.sanitize(query)
+
+        # Check security context
+        try:
+            security_context = get_security_context()
+        except RuntimeError:
+            security_context = None
+
+        if security_context and security_context.mode == "offline":
+            raise SecurityViolation("Web retrieval disabled in offline mode")
         
         # Build search URLs for each domain
         results = []

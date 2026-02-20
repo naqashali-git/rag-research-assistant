@@ -13,6 +13,7 @@ from rag_assistant.retrievers.web_retriever import QuerySanitizer, WebRetriever
 from rag_assistant.security import SecurityViolation
 from rag_assistant.audit.logger import AuditLogger
 import tempfile
+from pathlib import Path
 
 
 class TestQuerySanitization:
@@ -152,6 +153,19 @@ class TestWebRetrieverSecurity:
         with pytest.raises(SecurityViolation):
             web_retriever.retrieve(unsafe_query)
     
+
+    def test_retrieve_without_security_context(self, web_retriever, monkeypatch):
+        """Test retrieval still works when global security context is not initialized."""
+        monkeypatch.setattr(
+            web_retriever,
+            '_retrieve_from_domain',
+            lambda domain, query: [{'domain': domain, 'content': query}]
+        )
+
+        results = web_retriever.retrieve('machine learning')
+
+        assert len(results) == len(web_retriever.allowlist_domains)
+
     def test_cache_storage_with_metadata(self, web_retriever):
         """Test that cached pages have correct metadata."""
         url = "https://example.com/page"
